@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>jp.co.ntt.atrs.batch</groupId>
+    <artifactId>atrs-batch</artifactId>
+    <version>2.3.2.RELEASE</version>
+
+    <name>${project.artifactId}</name>
+    <description>ATRS Batch Project using Macchinetta Batch Framework (2.x)</description>
+    <inceptionYear>2017</inceptionYear>
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>manual</distribution>
+        </license>
+    </licenses>
+
+    <repositories>
+        <!-- === TERASOLUNA Batch RELEASES Repository === -->
+        <repository>
+            <releases>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>central</id>
+            <name>Maven Central repository</name>
+            <url>https://repo1.maven.org/maven2/</url>
+        </repository>
+    </repositories>
+
+    <properties>
+        <!-- == Maven Plugin Versions == -->
+        <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+        <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
+        <maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
+        <org.codehaus.mojo.sql-maven-plugin.version>1.5</org.codehaus.mojo.sql-maven-plugin.version>
+
+        <!-- == Dependency Versions == -->
+        <!-- == Spring Boot Dependencies == -->
+        <org.springframework.boot.version>2.7.7</org.springframework.boot.version>
+
+        <!-- == TERASOLUNA Batch == -->
+        <terasoluna-batch.version>5.4.2.RELEASE</terasoluna-batch.version>
+
+        <!-- == Joda-Time == -->
+        <joda-time.joda-time.version>2.12.2</joda-time.joda-time.version>
+
+        <!-- == Dozer == -->
+        <dozer.version>6.5.2</dozer.version>
+
+        <!-- == Project Properties == -->
+        <java-version>1.8</java-version>
+        <db.encoding>UTF8</db.encoding>
+        <db.basedir>sql/postgres</db.basedir>
+        <db.url>jdbc:postgresql://127.0.0.1:5432/atrs_batch</db.url>
+        <db.username>postgres</db.username>
+        <db.password>postgres</db.password>
+        <db.driver>org.postgresql.Driver</db.driver>
+        <db.groupId>org.postgresql</db.groupId>
+        <db.artifactId>postgresql</db.artifactId>
+        <db.version>42.5.1</db.version>
+        <db.delimiterType>row</db.delimiterType>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- == Begin Spring Boot Dependencies == -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${org.springframework.boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!-- == End Spring Boot Dependencies == -->
+
+            <!-- == Begin TERASOLUNA Batch -->
+            <dependency>
+                <groupId>org.terasoluna.batch</groupId>
+                <artifactId>terasoluna-batch</artifactId>
+                <version>${terasoluna-batch.version}</version>
+            </dependency>
+            <!-- == End TERASOLUNA Batch -->
+
+            <!-- == Begin Dozer == -->
+            <dependency>
+                <groupId>com.github.dozermapper</groupId>
+                <artifactId>dozer-core</artifactId>
+                <version>${dozer.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.dozermapper</groupId>
+                <artifactId>dozer-spring4</artifactId>
+                <version>${dozer.version}</version>
+            </dependency>
+            <!-- == End Dozer == -->
+
+            <!-- == Begin Joda-Time == -->
+            <dependency>
+                <groupId>joda-time</groupId>
+                <artifactId>joda-time</artifactId>
+                <version>${joda-time.joda-time.version}</version>
+            </dependency>
+            <!-- == End Joda-Time == -->
+
+            <!-- == Begin PostgreSQL == -->
+            <dependency>
+                <groupId>org.postgresql</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>${db.version}</version>
+            </dependency>
+            <!-- == End PostgreSQL == -->
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <!-- == Begin TERASOLUNA Batch == -->
+        <dependency>
+            <groupId>org.terasoluna.batch</groupId>
+            <artifactId>terasoluna-batch</artifactId>
+        </dependency>
+        <!-- == End TERASOLUNA Batch -->
+
+        <!-- == Begin Hibernate Validator == -->
+        <dependency>
+            <groupId>org.hibernate.validator</groupId>
+            <artifactId>hibernate-validator</artifactId>
+        </dependency>
+        <!-- == End Hibernate Validator == -->
+
+        <!-- == Begin Expression Language == -->
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>jakarta.el</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <!-- == End Expression Language == -->
+
+        <!-- == Begin Logback == -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <!-- == End Logback == -->
+
+        <!-- == Begin H2 Database Engine == -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <!-- == End H2 Database Engine == -->
+
+        <!-- == Begin PosgreSQL JDBC Driver == -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <!-- == End PosgreSQL JDBC Driver == -->
+
+        <!-- == Begin Apache Commons Lang == -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+        <!-- == End Apache Commons Lang == -->
+
+        <!-- == Begin Dozer == -->
+        <dependency>
+            <groupId>com.github.dozermapper</groupId>
+            <artifactId>dozer-core</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>jcl-over-slf4j</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.github.dozermapper</groupId>
+            <artifactId>dozer-spring4</artifactId>
+        </dependency>
+        <!-- == End Dozer == -->
+
+        <!-- == Begin Joda-Time == -->
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+        </dependency>
+        <!-- == End Joda-Time == -->
+    </dependencies>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${maven-compiler-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>${maven-jar-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>${maven-assembly-plugin.version}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <descriptors>
+                        <descriptor>src/main/assembly/distribution.xml</descriptor>
+                    </descriptors>
+                    <attach>false</attach>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>${java-version}</source>
+                    <target>${java-version}</target>
+                    <testSource>${java-version}</testSource>
+                    <testTarget>${java-version}</testTarget>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>sql-maven-plugin</artifactId>
+                <version>${org.codehaus.mojo.sql-maven-plugin.version}</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>${db.groupId}</groupId>
+                        <artifactId>${db.artifactId}</artifactId>
+                        <version>${db.version}</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <driver>${db.driver}</driver>
+                    <url>${db.url}</url>
+                    <username>${db.username}</username>
+                    <password>${db.password}</password>
+                    <encoding>${db.encoding}</encoding>
+                    <autocommit>false</autocommit>
+                    <delimiterType>${db.delimiterType}</delimiterType>
+                    <onError>continue</onError>
+                    <skip>false</skip>
+                    <fileset>
+                        <basedir>${db.basedir}</basedir>
+                        <includes>
+                            <include>0*.sql</include>
+                        </includes>
+                    </fileset>
+                    <orderFile>ascending</orderFile>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <!-- Including application properties and log settings into package. (default) -->
+        <profile>
+            <id>IncludeSettings</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-jar-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- Excluding application properties and log settings into package. -->
+        <profile>
+            <id>ExcludeSettings</id>
+            <activation>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-jar-plugin</artifactId>
+                        <configuration>
+                            <excludes>
+                                <exclude>batch-application.properties</exclude>
+                                <exclude>logback.xml</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>jdk11</id>
+            <activation>
+                <jdk>11</jdk>
+            </activation>
+            <properties>
+                <java-version>11</java-version>
+            </properties>
+        </profile>
+    </profiles>
+</project>
