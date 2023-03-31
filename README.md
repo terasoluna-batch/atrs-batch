@@ -11,7 +11,7 @@ Airline Ticket Reservation System (ATRS) is a sample application for developers 
 
 ## Version mapping
 
-The version mapping between TERASOLUNA and Macchinetta in ATRS is [here](https://terasoluna-batch.github.io/xxxx).
+The version mapping between TERASOLUNA and Macchinetta in ATRS is [here](https://github.com/terasoluna-batch/atrs-batch/wiki/ATRS‚Ìƒo[ƒWƒ‡ƒ“‚É‚Â‚¢‚Ä).
 
 ## How to run the application
 
