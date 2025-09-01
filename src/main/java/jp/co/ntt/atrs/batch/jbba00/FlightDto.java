@@ -23,10 +23,10 @@ import jp.co.ntt.atrs.batch.common.validate.HalfWidthAlphaNumber;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import java.util.Date;
+
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-
-import java.time.LocalDate;
 
 /**
  * フライト情報テーブルオブジェクト。
@@ -39,7 +39,7 @@ public class FlightDto {
      * 搭乗日。
      */
     @NotNull
-    private LocalDate departureDate;
+    private Date departureDate;
 
     /**
      * 便名。
@@ -76,7 +76,7 @@ public class FlightDto {
      * 
      * @return 搭乗日
      */
-    public LocalDate getDepartureDate() {
+    public Date getDepartureDate() {
         return departureDate;
     }
 
@@ -85,7 +85,7 @@ public class FlightDto {
      * 
      * @param departureDate 搭乗日
      */
-    public void setDepartureDate(LocalDate departureDate) {
+    public void setDepartureDate(Date departureDate) {
         this.departureDate = departureDate;
     }
 

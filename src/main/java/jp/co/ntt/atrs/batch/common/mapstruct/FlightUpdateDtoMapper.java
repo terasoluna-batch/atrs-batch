@@ -23,8 +23,8 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
 import java.text.ParseException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * フライト情報更新オブジェクト変換用Mapperインタフェース。
@@ -45,13 +45,12 @@ public interface FlightUpdateDtoMapper {
     FlightDto map(FlightUpdateDto flightUpdateDto) throws ParseException;
 
     @Named("stringToDate")
-    default LocalDate stringToDate(String string) throws ParseException {
+    default Date stringToDate(String string) throws ParseException {
         if(string == null) {
             return null;
         }
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-        LocalDate date = LocalDate.parse(string, formatter);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        Date date = sdf.parse(string);
         return date;
     }
 

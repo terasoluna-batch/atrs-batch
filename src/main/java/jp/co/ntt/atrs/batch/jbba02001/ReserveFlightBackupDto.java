@@ -19,7 +19,7 @@ package jp.co.ntt.atrs.batch.jbba02001;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import java.time.LocalDate;
+import java.util.Date;
 
 /**
  * 予約フライト情報退避オブジェクト。
@@ -41,7 +41,7 @@ public class ReserveFlightBackupDto {
     /**
      * 搭乗日。
      */
-    private LocalDate departureDate;
+    private Date departureDate;
 
     /**
      * 便名。
@@ -99,7 +99,7 @@ public class ReserveFlightBackupDto {
      * 
      * @return 搭乗日
      */
-    public LocalDate getDepartureDate() {
+    public Date getDepartureDate() {
         return departureDate;
     }
 
@@ -108,7 +108,7 @@ public class ReserveFlightBackupDto {
      * 
      * @param departureDate 搭乗日
      */
-    public void setDepartureDate(LocalDate departureDate) {
+    public void setDepartureDate(Date departureDate) {
         this.departureDate = departureDate;
     }
 

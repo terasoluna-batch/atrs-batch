@@ -18,11 +18,10 @@ package jp.co.ntt.atrs.batch.jbbb01002;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import java.util.Date;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-
-import java.time.LocalDate;
 
 /**
  * 区間搭乗者情報集計結果オブジェクト。
@@ -35,7 +34,7 @@ public class RouteAggregationResultDto {
      * 搭乗日。
      */
     @NotNull
-    private LocalDate departureDate;
+    private Date departureDate;
 
     /**
      * 区間番号。
@@ -79,7 +78,7 @@ public class RouteAggregationResultDto {
      * 
      * @return 搭乗日
      */
-    public LocalDate getDepartureDate() {
+    public Date getDepartureDate() {
         return departureDate;
     }
 
@@ -88,7 +87,7 @@ public class RouteAggregationResultDto {
      * 
      * @param departureDate 搭乗日
      */
-    public void setDepartureDate(LocalDate departureDate) {
+    public void setDepartureDate(Date departureDate) {
         this.departureDate = departureDate;
     }
 

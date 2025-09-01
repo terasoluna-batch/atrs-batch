@@ -19,12 +19,12 @@ package jp.co.ntt.atrs.batch.jbbb00;
 import jp.co.ntt.atrs.batch.common.logging.LogMessages;
 import jp.co.ntt.atrs.batch.common.util.DateUtil;
 
+import org.joda.time.DateTime;
+import org.joda.time.Interval;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
+import java.util.Date;
 
 /**
  * 集計期間に関するユーティリティクラス。
@@ -54,8 +54,8 @@ public class AggregationPeriodUtil {
      */
     public static AggregationPeriodDto create(String firstDateStr, String lastDateStr) {
 
-        LocalDate firstDate = null;
-        LocalDate lastDate = null;
+        Date firstDate = null;
+        Date lastDate = null;
         try {
             // 日付文字列をDate型に変換
             firstDate = DateUtil.convertDate(firstDateStr);
@@ -81,30 +81,32 @@ public class AggregationPeriodUtil {
      * @param lastDate 集計終了日
      * @return 判定結果
      */
-    private static boolean check(LocalDate firstDate, LocalDate lastDate) {
+    private static boolean check(Date firstDate, Date lastDate) {
 
         // 集計開始日、終了日のInterval作成
-        LocalDateTime firstLocalDateTime = firstDate.atStartOfDay();
-        LocalDateTime lastLocalDateTime = lastDate.atStartOfDay();
-        if (firstLocalDateTime.isAfter(lastLocalDateTime)) {
+        DateTime firstDateTime = new DateTime(firstDate);
+        DateTime lastDateTime = new DateTime(lastDate);
+        Interval interval = null;
+        try {
+            interval = new Interval(firstDateTime, lastDateTime);
+        } catch (IllegalArgumentException e) {
             // 日付チェックエラー
-            LOGGER.error(LogMessages.E_AR_BB01_L8001.getMessage());
+            LOGGER.error(LogMessages.E_AR_BB01_L8001.getMessage(), e);
             return false;
         }
 
         // 参照可能期間の作成
-        LocalDateTime currentDate = LocalDate.now().atStartOfDay();
-        LocalDateTime firstFindAvailableDate = currentDate.minusMonths(1).withDayOfMonth(1);
-        LocalDateTime lastFindAvailableDate = currentDate.plus(1, ChronoUnit.MILLIS);
+        DateTime currentDate = new DateTime().withTimeAtStartOfDay();
+        DateTime firstFindAvailableDate = currentDate.minusMonths(1).dayOfMonth().withMinimumValue();
+        DateTime lastFindAvailableDate = currentDate.plusMillis(1);
+        Interval findAvailableInterval = new Interval(firstFindAvailableDate, lastFindAvailableDate);
 
-        // 参照可能期間に含まれるかのチェック
-        if (!(firstLocalDateTime.isBefore(firstFindAvailableDate)) &&
-                !(lastLocalDateTime.isAfter(lastFindAvailableDate))) {
+        if (findAvailableInterval.contains(interval)) {
             return true;
         }
-
         // 日付チェックエラー
         LOGGER.error(LogMessages.E_AR_BB01_L8001.getMessage());
         return false;
     }
+
 }
