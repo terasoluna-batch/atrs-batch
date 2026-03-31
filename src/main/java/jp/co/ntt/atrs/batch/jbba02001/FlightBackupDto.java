@@ -1,5 +1,8 @@
 /*
  * Copyright(c) 2017 NTT Corporation.
+ * Copyright(c) 2026 NTT DATA Group Corporation.
+ *
+ * Modified by NTT DATA Group Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +22,7 @@ package jp.co.ntt.atrs.batch.jbba02001;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 /**
  * フライト情報退避オブジェクト。
@@ -31,7 +34,7 @@ public class FlightBackupDto {
     /**
      * 搭乗日。
      */
-    private Date departureDate;
+    private LocalDate departureDate;
 
     /**
      * 便名。
@@ -58,7 +61,7 @@ public class FlightBackupDto {
      * 
      * @return 搭乗日
      */
-    public Date getDepartureDate() {
+    public LocalDate getDepartureDate() {
         return departureDate;
     }
 
@@ -67,7 +70,7 @@ public class FlightBackupDto {
      * 
      * @param departureDate 搭乗日
      */
-    public void setDepartureDate(Date departureDate) {
+    public void setDepartureDate(LocalDate departureDate) {
         this.departureDate = departureDate;
     }
 

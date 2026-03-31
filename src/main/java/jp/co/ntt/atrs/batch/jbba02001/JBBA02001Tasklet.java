@@ -1,5 +1,8 @@
 /*
  * Copyright(c) 2017 NTT Corporation.
+ * Copyright(c) 2026 NTT DATA Group Corporation.
+ *
+ * Modified by NTT DATA Group Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,19 +26,18 @@ import jp.co.ntt.atrs.batch.common.mapstruct.PassengerDtoMapper;
 import jp.co.ntt.atrs.batch.common.mapstruct.ReserveFlightDtoMapper;
 import jp.co.ntt.atrs.batch.jbba00.FlightDto;
 
-import org.joda.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.ExitStatus;
-import org.springframework.batch.core.StepContribution;
+import org.springframework.batch.core.step.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
-import org.springframework.batch.item.Chunk;
-import org.springframework.batch.item.ItemStreamException;
-import org.springframework.batch.item.ItemStreamWriter;
-import org.springframework.batch.item.validator.ValidationException;
-import org.springframework.batch.item.validator.Validator;
-import org.springframework.batch.repeat.RepeatStatus;
+import org.springframework.batch.infrastructure.item.Chunk;
+import org.springframework.batch.infrastructure.item.ItemStreamException;
+import org.springframework.batch.infrastructure.item.ItemStreamWriter;
+import org.springframework.batch.infrastructure.item.validator.ValidationException;
+import org.springframework.batch.infrastructure.item.validator.Validator;
+import org.springframework.batch.infrastructure.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Scope;
@@ -43,11 +45,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
 import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -165,15 +167,14 @@ public class JBBA02001Tasklet implements Tasklet {
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
 
         // システム日時を取得し、日を"01"、時間を"00:00:00"に変更した日時をバッチ処理日時として保持
-        final Calendar calendar = Calendar.getInstance();
-        calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), 1, 0, 0, 0);
+        LocalDate batchDate = LocalDate.now().withDayOfMonth(1);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMM");
 
         // 退避を実施した年月
-        final String fileYYYYMM = new LocalDate(calendar.getTime()).toString("yyyyMM");
+        final String fileYYYYMM = batchDate.format(formatter);
 
         // バッチ処理日時から1か月さかのぼった日時を退避処理日時として保持
-        calendar.add(Calendar.MONTH, -1);
-        final Date paramDate = calendar.getTime();
+        LocalDate paramDate = batchDate.minusMonths(1);
 
         // バックアップファイルのパスを取得
         Path flightBackupFile = Paths.get(userDir, PATH_FLIGHT_BACKUP);
@@ -258,7 +259,7 @@ public class JBBA02001Tasklet implements Tasklet {
      * @return バックアップ件数
      * @throws AtrsBatchException
      */
-    private int backupFlightDb(Date paramDate, String fileName, String newFileName, ChunkContext chunkContext)
+    private int backupFlightDb(LocalDate paramDate, String fileName, String newFileName, ChunkContext chunkContext)
             throws AtrsBatchException {
 
         int cnt = 0;
@@ -339,7 +340,7 @@ public class JBBA02001Tasklet implements Tasklet {
      * @return バックアップ件数
      * @throws AtrsBatchException
      */
-    private int backupReserveFlightDb(Date paramDate, String fileName, String newFileName, ChunkContext chunkContext)
+    private int backupReserveFlightDb(LocalDate paramDate, String fileName, String newFileName, ChunkContext chunkContext)
             throws AtrsBatchException {
 
         int cnt = 0;
@@ -421,7 +422,7 @@ public class JBBA02001Tasklet implements Tasklet {
      * @return バックアップ件数
      * @throws AtrsBatchException
      */
-    private int backupPassengerDb(Date paramDate, String fileName, String newFileName, ChunkContext chunkContext)
+    private int backupPassengerDb(LocalDate paramDate, String fileName, String newFileName, ChunkContext chunkContext)
             throws AtrsBatchException {
 
         int cnt = 0;

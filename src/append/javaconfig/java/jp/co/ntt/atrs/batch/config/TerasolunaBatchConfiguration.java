@@ -1,5 +1,8 @@
 /*
  * Copyright (C) 2024 NTT Corporation
+ * Copyright (C) 2026 NTT DATA Group Corporation
+ *
+ * Modified by NTT DATA Group Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +19,17 @@
 package jp.co.ntt.atrs.batch.config;
 
 import org.springframework.batch.core.configuration.BatchConfigurationException;
-import org.springframework.batch.core.configuration.support.DefaultBatchConfiguration;
+import org.springframework.batch.core.configuration.support.JdbcDefaultBatchConfiguration;
+import org.springframework.batch.core.configuration.support.MapJobRegistry;
 import org.springframework.batch.core.launch.JobOperator;
 import org.springframework.batch.core.configuration.JobRegistry;
-import org.springframework.batch.core.explore.JobExplorer;
-import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.launch.support.JobOperatorFactoryBean;
 import org.springframework.batch.core.repository.JobRepository;
-import org.springframework.batch.core.repository.support.JobRepositoryFactoryBean;
+import org.springframework.batch.core.repository.support.JdbcJobRepositoryFactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.task.SyncTaskExecutor;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Isolation;
 import org.terasoluna.batch.converter.JobParametersConverterImpl;
@@ -38,9 +42,9 @@ import javax.sql.DataSource;
  * @author 電電次郎
  */
 @Configuration
-public class TerasolunaBatchConfiguration extends DefaultBatchConfiguration {
+public class TerasolunaBatchConfiguration extends JdbcDefaultBatchConfiguration {
 
-    // DefaultBatchConfigurationはデータソースのBean名を「dataSource」で探すので、
+    // JdbcDefaultBatchConfigurationはデータソースのBean名を「dataSource」で探すので、
     // getDataSourceをオーバーライドして「adminDataSource」で探すように修正
     @Override
     protected DataSource getDataSource() {
@@ -62,7 +66,7 @@ public class TerasolunaBatchConfiguration extends DefaultBatchConfiguration {
                 DataSource.class);
     }
 
-    // DefaultBatchConfigurationはトランザクションマネージャのBean名を「transactionManager」で探すので、
+    // JdbcDefaultBatchConfigurationはトランザクションマネージャのBean名を「transactionManager」で探すので、
     // getTransactionManagerをオーバーライドして「adminTransactionManager」で探すように修正
     @Override
     protected PlatformTransactionManager getTransactionManager() {
@@ -87,67 +91,67 @@ public class TerasolunaBatchConfiguration extends DefaultBatchConfiguration {
 
     // JobRepositoryのデフォルトのトランザクション隔離レベルが「SERIALIZABLE」なので、
     // Bean定義をオーバーライドして「READ COMMITTED」に修正
-    @Override
     @Bean
+    @Override
     public JobRepository jobRepository() throws BatchConfigurationException {
-        JobRepositoryFactoryBean jobRepositoryFactoryBean = new JobRepositoryFactoryBean();
-        jobRepositoryFactoryBean.setDataSource(
-                getDataSource()); // adminDataSourceを取得、設定
-        jobRepositoryFactoryBean.setTransactionManager(
-                getTransactionManager()); // adminTransactionManagerを取得、設定
-        jobRepositoryFactoryBean.setIncrementerFactory(getIncrementerFactory());
-        jobRepositoryFactoryBean.setClobType(getClobType());
-        jobRepositoryFactoryBean.setTablePrefix(getTablePrefix());
-        jobRepositoryFactoryBean.setSerializer(getExecutionContextSerializer());
-        jobRepositoryFactoryBean.setConversionService(getConversionService());
-        jobRepositoryFactoryBean.setJdbcOperations(getJdbcOperations());
-        jobRepositoryFactoryBean.setLobHandler(getLobHandler());
-        jobRepositoryFactoryBean.setCharset(getCharset());
-        jobRepositoryFactoryBean.setMaxVarCharLength(getMaxVarCharLength());
-        jobRepositoryFactoryBean.setIsolationLevelForCreateEnum(
-                Isolation.READ_COMMITTED); // SERIALIZABLEから変更
-        jobRepositoryFactoryBean.setValidateTransactionState(
-                getValidateTransactionState());
-
+        JdbcJobRepositoryFactoryBean jobRepositoryFactoryBean = new JdbcJobRepositoryFactoryBean();
         try {
+            jobRepositoryFactoryBean.setDataSource(getDataSource()); // adminDataSourceを取得、設定
+            jobRepositoryFactoryBean.setTransactionManager(getTransactionManager()); // adminTransactionManagerを取得、設定
             jobRepositoryFactoryBean.setDatabaseType(getDatabaseType());
+            jobRepositoryFactoryBean.setIncrementerFactory(getIncrementerFactory());
+            jobRepositoryFactoryBean.setJobKeyGenerator(getJobKeyGenerator());
+            jobRepositoryFactoryBean.setClobType(getClobType());
+            jobRepositoryFactoryBean.setTablePrefix(getTablePrefix());
+            jobRepositoryFactoryBean.setSerializer(getExecutionContextSerializer());
+            jobRepositoryFactoryBean.setConversionService(getConversionService());
+            jobRepositoryFactoryBean.setJdbcOperations(getJdbcOperations());
+            jobRepositoryFactoryBean.setCharset(getCharset());
+            jobRepositoryFactoryBean.setMaxVarCharLength(getMaxVarCharLength());
+            jobRepositoryFactoryBean.setIsolationLevelForCreateEnum(Isolation.READ_COMMITTED); // SERIALIZABLEから変更
+            jobRepositoryFactoryBean.setValidateTransactionState(getValidateTransactionState());
             jobRepositoryFactoryBean.afterPropertiesSet();
             return jobRepositoryFactoryBean.getObject();
-
         } catch (BatchConfigurationException e) {
             throw e;
         } catch (Exception e) {
-            throw new BatchConfigurationException(
-                    "Unable to configure the customized job repository", e);
+            throw new BatchConfigurationException("Unable to configure the customized job repository", e);
         }
     }
 
     // JobOperatorのデフォルトのJobParametersConverterの実装クラスが「DefaultJobParametersConverter」なので、
     // Bean定義をオーバーライドして「JobParametersConverterImpl」に修正
-    @Override
     @Bean
-    public JobOperator jobOperator(JobRepository jobRepository, JobExplorer jobExplorer, JobRegistry jobRegistry, JobLauncher jobLauncher) throws BatchConfigurationException {
+    @Override
+    public JobOperator jobOperator(JobRepository jobRepository) throws BatchConfigurationException {
         JobOperatorFactoryBean jobOperatorFactoryBean = new JobOperatorFactoryBean();
-        jobOperatorFactoryBean.setTransactionManager(this.getTransactionManager());
         jobOperatorFactoryBean.setJobRepository(jobRepository);
-        jobOperatorFactoryBean.setJobExplorer(jobExplorer);
-        jobOperatorFactoryBean.setJobRegistry(jobRegistry);
-        jobOperatorFactoryBean.setJobLauncher(jobLauncher);
+        jobOperatorFactoryBean.setJobRegistry(jobRegistry());
+        jobOperatorFactoryBean.setTransactionManager(getTransactionManager());
+        jobOperatorFactoryBean.setObservationRegistry(getObservationRegistry());
         JobParametersConverterImpl jobParametersConverter = new JobParametersConverterImpl(
                 getDataSource());
         jobOperatorFactoryBean.setJobParametersConverter(
                 jobParametersConverter); // JobParametersConverterImplに変更
-
+        jobOperatorFactoryBean.setTaskExecutor(taskExecutor());
         try {
             jobParametersConverter.afterPropertiesSet();
             jobOperatorFactoryBean.afterPropertiesSet();
             return jobOperatorFactoryBean.getObject();
-
         } catch (BatchConfigurationException e) {
             throw e;
         } catch (Exception e) {
-            throw new BatchConfigurationException(
-                    "Unable to configure the customized job operator", e);
+            throw new BatchConfigurationException("Unable to configure the customized job operator", e);
         }
+    }
+
+    @Bean
+    public TaskExecutor taskExecutor() {
+        return new SyncTaskExecutor();
+    }
+
+    @Bean
+    public JobRegistry jobRegistry() {
+        return new MapJobRegistry();
     }
 }

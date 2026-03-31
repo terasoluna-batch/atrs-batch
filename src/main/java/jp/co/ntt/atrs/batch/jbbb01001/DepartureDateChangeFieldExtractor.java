@@ -1,5 +1,8 @@
 /*
  * Copyright(c) 2017 NTT Corporation.
+ * Copyright(c) 2026 NTT DATA Group Corporation.
+ *
+ * Modified by NTT DATA Group Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +19,17 @@
  */
 package jp.co.ntt.atrs.batch.jbbb01001;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-
-import org.springframework.batch.item.file.transform.FieldExtractor;
+import org.springframework.batch.infrastructure.item.file.transform.FieldExtractor;
 import org.springframework.stereotype.Component;
+
+import java.time.format.DateTimeFormatter;
 
 @Component
 public class DepartureDateChangeFieldExtractor implements FieldExtractor<ReservationDto> {
     @Override
     public Object[] extract(ReservationDto item) {
 
-        DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyyMMdd");
 
         Object[] values = { item.getReserveNo(),
                 item.getFlightName(),

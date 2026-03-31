@@ -1,5 +1,8 @@
 /*
  * Copyright (C) 2024 NTT Corporation
+ * Copyright (C) 2026 NTT DATA Group Corporation
+ *
+ * Modified by NTT DATA Group Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,15 +22,15 @@ import java.io.File;
 
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.mapper.MapperFactoryBean;
-import org.springframework.batch.core.Job;
-import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.Job;
+import org.springframework.batch.core.step.Step;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
-import org.springframework.batch.item.file.FlatFileItemWriter;
-import org.springframework.batch.item.file.builder.FlatFileItemWriterBuilder;
-import org.springframework.batch.item.file.transform.BeanWrapperFieldExtractor;
+import org.springframework.batch.infrastructure.item.file.FlatFileItemWriter;
+import org.springframework.batch.infrastructure.item.file.builder.FlatFileItemWriterBuilder;
+import org.springframework.batch.infrastructure.item.file.transform.BeanWrapperFieldExtractor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -158,7 +161,7 @@ public class JBBA02001Config {
                                              Step step01,
                                              JobExitCodeChangeListener jobExitCodeChangeListener,
                                              JobLoggingListener jobLoggingListener) {
-        return new JobBuilder("JBBA02001", jobRepository)
+        return new JobBuilder(jobRepository)
                 .start(step01)
                 .listener(jobExitCodeChangeListener)
                 .listener(jobLoggingListener)

@@ -1,5 +1,8 @@
 /*
  * Copyright(c) 2017 NTT Corporation.
+ * Copyright(c) 2026 NTT DATA Group Corporation.
+ *
+ * Modified by NTT DATA Group Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +21,8 @@ package jp.co.ntt.atrs.batch.common.listener;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.batch.core.JobExecution;
-import org.springframework.batch.core.JobExecutionListener;
+import org.springframework.batch.core.job.JobExecution;
+import org.springframework.batch.core.listener.JobExecutionListener;
 import org.springframework.stereotype.Component;
 
 import jp.co.ntt.atrs.batch.common.logging.LogMessages;

@@ -1,5 +1,8 @@
 /*
  * Copyright(c) 2017 NTT Corporation.
+ * Copyright(c) 2026 NTT DATA Group Corporation.
+ *
+ * Modified by NTT DATA Group Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,34 +26,34 @@ import jp.co.ntt.atrs.batch.common.mapstruct.ReservationResultDtoMapper;
 import jp.co.ntt.atrs.batch.jbbb00.AggregationPeriodDto;
 import jp.co.ntt.atrs.batch.jbbb00.AggregationPeriodUtil;
 
-import org.joda.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.ExitStatus;
-import org.springframework.batch.core.StepContribution;
+import org.springframework.batch.core.step.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 
-import org.springframework.batch.repeat.RepeatStatus;
+import org.springframework.batch.infrastructure.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
-import org.springframework.batch.item.Chunk;
-import org.springframework.batch.item.ExecutionContext;
-import org.springframework.batch.item.ItemStreamException;
-import org.springframework.batch.item.ItemStreamWriter;
-import org.springframework.batch.item.support.SingleItemPeekableItemReader;
-import org.springframework.batch.item.validator.ValidationException;
-import org.springframework.batch.item.validator.Validator;
+import org.springframework.batch.infrastructure.item.Chunk;
+import org.springframework.batch.infrastructure.item.ExecutionContext;
+import org.springframework.batch.infrastructure.item.ItemStreamException;
+import org.springframework.batch.infrastructure.item.ItemStreamWriter;
+import org.springframework.batch.infrastructure.item.support.SingleItemPeekableItemReader;
+import org.springframework.batch.infrastructure.item.validator.ValidationException;
+import org.springframework.batch.infrastructure.item.validator.Validator;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -233,8 +236,8 @@ public class JBBB01001Tasklet implements Tasklet {
             // 対象レコード処理後にコントロールブレイクを実施する
             if (isBreakByReserveDate(nextData, inputData)) {
                 // コントロールブレイクした値を取得し、出力ファイルネーム用に文字列変換する
-                LocalDate ld = new LocalDate(inputData.getReserveDate());
-                String outputDate = ld.toString("yyyyMMdd");
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+                String outputDate = inputData.getReserveDate().format(formatter);
 
                 // 出力ファイルパス
                 String outputFilePath = MessageFormat.format(outputFile.toString(), outputDate);

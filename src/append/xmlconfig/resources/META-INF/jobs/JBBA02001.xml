@@ -17,44 +17,44 @@
     <property name="sqlSessionFactory" ref="jobSqlSessionFactory" />
   </bean>
 
-  <bean id="flightBackupFileWriter" class="org.springframework.batch.item.file.FlatFileItemWriter"
+  <bean id="flightBackupFileWriter" class="org.springframework.batch.infrastructure.item.file.FlatFileItemWriter"
     scope="step" p:resource="file:${user.dir}/${path.FlightBackup}" p:encoding="UTF-8"
     p:lineSeparator="&#x0A;" p:appendAllowed="true" p:transactional="false">
-    <property name="lineAggregator">
+    <constructor-arg>
       <bean class="org.terasoluna.batch.item.file.transform.EnclosableDelimitedLineAggregator"
         p:delimiter="," p:enclosure='"' p:allEnclosing="true">
         <property name="fieldExtractor">
           <bean class="jp.co.ntt.atrs.batch.jbba02001.FlightBackupDtoDateChangeFieldExtractor" />
         </property>
       </bean>
-    </property>
+    </constructor-arg>
   </bean>
 
-  <bean id="reserveFlightBackupFileWriter" class="org.springframework.batch.item.file.FlatFileItemWriter"
+  <bean id="reserveFlightBackupFileWriter" class="org.springframework.batch.infrastructure.item.file.FlatFileItemWriter"
     scope="step" p:resource="file:${user.dir}/${path.ReserveFlightBackup}" p:encoding="UTF-8"
     p:lineSeparator="&#x0A;" p:appendAllowed="true" p:transactional="false">
-    <property name="lineAggregator">
+    <constructor-arg>
       <bean class="org.terasoluna.batch.item.file.transform.EnclosableDelimitedLineAggregator"
         p:delimiter="," p:enclosure='"' p:allEnclosing="true">
         <property name="fieldExtractor">
           <bean class="jp.co.ntt.atrs.batch.jbba02001.ReserveFlightBackupDtoDateChangeFieldExtractor" />
         </property>
       </bean>
-    </property>
+    </constructor-arg>
   </bean>
 
-  <bean id="passengerBackupFileWriter" class="org.springframework.batch.item.file.FlatFileItemWriter"
+  <bean id="passengerBackupFileWriter" class="org.springframework.batch.infrastructure.item.file.FlatFileItemWriter"
     scope="step" p:resource="file:${user.dir}/${path.PassengerBackup}" p:encoding="UTF-8"
     p:lineSeparator="&#x0A;" p:appendAllowed="true" p:transactional="false">
-    <property name="lineAggregator">
+    <constructor-arg>
       <bean class="org.terasoluna.batch.item.file.transform.EnclosableDelimitedLineAggregator"
         p:delimiter="," p:enclosure='"' p:allEnclosing="true">
         <property name="fieldExtractor">
-          <bean class="org.springframework.batch.item.file.transform.BeanWrapperFieldExtractor"
+          <bean class="org.springframework.batch.infrastructure.item.file.transform.BeanWrapperFieldExtractor"
             p:names="passengerNo,reserveFlightNo,familyName,givenName,age,gender,customerNo" />
         </property>
       </bean>
-    </property>
+    </constructor-arg>
   </bean>
 
   <batch:job id="JBBA02001" job-repository="jobRepository">

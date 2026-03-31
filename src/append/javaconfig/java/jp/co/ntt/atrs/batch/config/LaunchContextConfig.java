@@ -1,5 +1,8 @@
 /*
  * Copyright (C) 2023 NTT Corporation
+ * Copyright (C) 2026 NTT DATA Group Corporation
+ *
+ * Modified by NTT DATA Group Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +34,8 @@ import org.springframework.batch.core.configuration.JobRegistry;
 import org.springframework.batch.core.converter.JobParametersConverter;
 import org.springframework.batch.core.launch.support.ExitCodeMapper;
 import org.springframework.batch.core.launch.support.SimpleJvmExitCodeMapper;
-import org.springframework.batch.item.validator.SpringValidator;
-import org.springframework.batch.support.transaction.ResourcelessTransactionManager;
+import org.springframework.batch.infrastructure.item.validator.SpringValidator;
+import org.springframework.batch.infrastructure.support.transaction.ResourcelessTransactionManager;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;

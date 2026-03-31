@@ -1,5 +1,8 @@
 /*
  * Copyright (C) 2024 NTT Corporation
+ * Copyright (C) 2026 NTT DATA Group Corporation
+ *
+ * Modified by NTT DATA Group Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +19,7 @@
 package jp.co.ntt.atrs.batch.jobs;
 
 import java.io.File;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,16 +29,16 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.mybatis.spring.batch.MyBatisCursorItemReader;
 import org.mybatis.spring.batch.builder.MyBatisCursorItemReaderBuilder;
 import org.mybatis.spring.mapper.MapperFactoryBean;
-import org.springframework.batch.core.Job;
-import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.Job;
+import org.springframework.batch.core.step.Step;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
-import org.springframework.batch.item.file.FlatFileItemWriter;
-import org.springframework.batch.item.file.builder.FlatFileItemWriterBuilder;
-import org.springframework.batch.item.support.SingleItemPeekableItemReader;
-import org.springframework.batch.item.support.builder.SingleItemPeekableItemReaderBuilder;
+import org.springframework.batch.infrastructure.item.file.FlatFileItemWriter;
+import org.springframework.batch.infrastructure.item.file.builder.FlatFileItemWriterBuilder;
+import org.springframework.batch.infrastructure.item.support.SingleItemPeekableItemReader;
+import org.springframework.batch.infrastructure.item.support.builder.SingleItemPeekableItemReaderBuilder;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -92,8 +95,8 @@ public class JBBB01002Config {
     @Bean
     @StepScope
     public MyBatisCursorItemReader<RouteAggregationResultDto> delegateReader(
-            @Value("#{stepExecutionContext['firstDate']}") Date firstDate,
-            @Value("#{stepExecutionContext['lastDate']}") Date lastDate,
+            @Value("#{stepExecutionContext['firstDate']}") LocalDate firstDate,
+            @Value("#{stepExecutionContext['lastDate']}") LocalDate lastDate,
             @Qualifier("jobSqlSessionFactory") SqlSessionFactory jobSqlSessionFactory) {
         Map<String, Object> parameterValues = new HashMap<>();
         parameterValues.put("firstDate", firstDate);
@@ -146,7 +149,7 @@ public class JBBB01002Config {
                                              Step step01,
                                              JobExitCodeChangeListener jobExitCodeChangeListener,
                                              JobLoggingListener jobLoggingListener) {
-        return new JobBuilder("JBBB01002", jobRepository)
+        return new JobBuilder(jobRepository)
                 .start(step01)
                 .listener(jobExitCodeChangeListener)
                 .listener(jobLoggingListener)

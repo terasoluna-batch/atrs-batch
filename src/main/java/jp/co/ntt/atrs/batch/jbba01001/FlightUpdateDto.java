@@ -1,5 +1,8 @@
 /*
  * Copyright(c) 2017 NTT Corporation.
+ * Copyright(c) 2026 NTT DATA Group Corporation.
+ *
+ * Modified by NTT DATA Group Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +27,7 @@ import jp.co.ntt.atrs.batch.common.validate.HalfWidthNumber;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import jakarta.validation.constraints.NotEmpty;
-import org.springframework.batch.item.ItemCountAware;
+import org.springframework.batch.infrastructure.item.ItemCountAware;
 
 import jakarta.validation.constraints.Size;
 

@@ -1,5 +1,8 @@
 /*
  * Copyright(c) 2023 NTT Corporation.
+ * Copyright(c) 2026 NTT DATA Group Corporation.
+ *
+ * Modified by NTT DATA Group Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +26,8 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 /**
  * フライト情報更新オブジェクト変換用Mapperインタフェース。
@@ -45,12 +48,13 @@ public interface FlightUpdateDtoMapper {
     FlightDto map(FlightUpdateDto flightUpdateDto) throws ParseException;
 
     @Named("stringToDate")
-    default Date stringToDate(String string) throws ParseException {
+    default LocalDate stringToDate(String string) throws ParseException {
         if(string == null) {
             return null;
         }
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-        Date date = sdf.parse(string);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        LocalDate date = LocalDate.parse(string, formatter);
         return date;
     }
 

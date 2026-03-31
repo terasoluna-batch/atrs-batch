@@ -21,7 +21,7 @@
 
    <mybatis:scan base-package="jp.co.ntt.atrs.batch.jbbb01002" factory-ref="jobSqlSessionFactory"/>
 
-  <bean id="routeAggregationResultReader" class="org.springframework.batch.item.support.SingleItemPeekableItemReader"
+  <bean id="routeAggregationResultReader" class="org.springframework.batch.infrastructure.item.support.SingleItemPeekableItemReader"
     p:delegate-ref="delegateReader" />
 
   <bean id="delegateReader" class="org.mybatis.spring.batch.MyBatisCursorItemReader" scope="step"
@@ -35,18 +35,18 @@
     </property>
   </bean>
 
-  <bean id="routeAggregationWriter" class="org.springframework.batch.item.file.FlatFileItemWriter"
+  <bean id="routeAggregationWriter" class="org.springframework.batch.infrastructure.item.file.FlatFileItemWriter"
     scope="step" p:resource="file:${user.dir}/${path.RouteAggregationData}" p:encoding="UTF-8"
     p:lineSeparator="&#x0A;" p:appendAllowed="true" p:transactional="false"
     p:headerCallback-ref="writeHeaderFlatFileHeaderCallback">
-    <property name="lineAggregator">
+    <constructor-arg>
       <bean class="org.terasoluna.batch.item.file.transform.EnclosableDelimitedLineAggregator"
         p:delimiter="," p:enclosure='"' p:allEnclosing="true">
         <property name="fieldExtractor">
           <bean class="jp.co.ntt.atrs.batch.jbbb01002.DepartureDateChangeFieldExtractor" />
         </property>
       </bean>
-    </property>
+    </constructor-arg>
   </bean>
 
   <batch:job id="JBBB01002" job-repository="jobRepository">

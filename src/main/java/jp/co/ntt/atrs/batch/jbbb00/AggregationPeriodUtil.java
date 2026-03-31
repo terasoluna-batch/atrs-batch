@@ -1,5 +1,8 @@
 /*
  * Copyright(c) 2017 NTT Corporation.
+ * Copyright(c) 2026 NTT DATA Group Corporation.
+ *
+ * Modified by NTT DATA Group Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,12 +22,12 @@ package jp.co.ntt.atrs.batch.jbbb00;
 import jp.co.ntt.atrs.batch.common.logging.LogMessages;
 import jp.co.ntt.atrs.batch.common.util.DateUtil;
 
-import org.joda.time.DateTime;
-import org.joda.time.Interval;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 /**
  * 集計期間に関するユーティリティクラス。
@@ -54,8 +57,8 @@ public class AggregationPeriodUtil {
      */
     public static AggregationPeriodDto create(String firstDateStr, String lastDateStr) {
 
-        Date firstDate = null;
-        Date lastDate = null;
+        LocalDate firstDate = null;
+        LocalDate lastDate = null;
         try {
             // 日付文字列をDate型に変換
             firstDate = DateUtil.convertDate(firstDateStr);
@@ -81,32 +84,30 @@ public class AggregationPeriodUtil {
      * @param lastDate 集計終了日
      * @return 判定結果
      */
-    private static boolean check(Date firstDate, Date lastDate) {
+    private static boolean check(LocalDate firstDate, LocalDate lastDate) {
 
         // 集計開始日、終了日のInterval作成
-        DateTime firstDateTime = new DateTime(firstDate);
-        DateTime lastDateTime = new DateTime(lastDate);
-        Interval interval = null;
-        try {
-            interval = new Interval(firstDateTime, lastDateTime);
-        } catch (IllegalArgumentException e) {
+        LocalDateTime firstLocalDateTime = firstDate.atStartOfDay();
+        LocalDateTime lastLocalDateTime = lastDate.atStartOfDay();
+        if (firstLocalDateTime.isAfter(lastLocalDateTime)) {
             // 日付チェックエラー
-            LOGGER.error(LogMessages.E_AR_BB01_L8001.getMessage(), e);
+            LOGGER.error(LogMessages.E_AR_BB01_L8001.getMessage());
             return false;
         }
 
         // 参照可能期間の作成
-        DateTime currentDate = new DateTime().withTimeAtStartOfDay();
-        DateTime firstFindAvailableDate = currentDate.minusMonths(1).dayOfMonth().withMinimumValue();
-        DateTime lastFindAvailableDate = currentDate.plusMillis(1);
-        Interval findAvailableInterval = new Interval(firstFindAvailableDate, lastFindAvailableDate);
+        LocalDateTime currentDate = LocalDate.now().atStartOfDay();
+        LocalDateTime firstFindAvailableDate = currentDate.minusMonths(1).withDayOfMonth(1);
+        LocalDateTime lastFindAvailableDate = currentDate.plus(1, ChronoUnit.MILLIS);
 
-        if (findAvailableInterval.contains(interval)) {
+        // 参照可能期間に含まれるかのチェック
+        if (!(firstLocalDateTime.isBefore(firstFindAvailableDate)) &&
+                !(lastLocalDateTime.isAfter(lastFindAvailableDate))) {
             return true;
         }
+
         // 日付チェックエラー
         LOGGER.error(LogMessages.E_AR_BB01_L8001.getMessage());
         return false;
     }
-
 }

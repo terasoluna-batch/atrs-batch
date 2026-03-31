@@ -1,5 +1,8 @@
 /*
  * Copyright(c) 2017 NTT Corporation.
+ * Copyright(c) 2026 NTT DATA Group Corporation.
+ *
+ * Modified by NTT DATA Group Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +19,13 @@
  */
 package jp.co.ntt.atrs.batch.common.util;
 
-import org.joda.time.format.DateTimeFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import jp.co.ntt.atrs.batch.common.logging.LogMessages;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 /**
  * 日付変換に関するユーティリティクラス。
@@ -49,9 +52,10 @@ public class DateUtil {
      * @return 日付文字列をDate型に変換した結果
      * @throws IllegalArgumentException 日付変換エラー
      */
-    public static Date convertDate(String dateStr) throws IllegalArgumentException {
+    public static LocalDate convertDate(String dateStr) throws IllegalArgumentException {
         try {
-            return DateTimeFormat.forPattern("yyyyMMdd").parseDateTime(dateStr).toDate();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+            return LocalDate.parse(dateStr, formatter);
         } catch (IllegalArgumentException e) {
             // 日付変換エラー
             LOGGER.error(LogMessages.E_AR_FW_L9002.getMessage(dateStr), e);

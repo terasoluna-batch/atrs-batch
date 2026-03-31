@@ -15,25 +15,25 @@
     <mybatis:scan base-package="jp.co.ntt.atrs.batch.jbba01001" factory-ref="jobSqlSessionFactory"/>
 
     <bean id="reader"
-        class="org.springframework.batch.item.file.FlatFileItemReader"
+        class="org.springframework.batch.infrastructure.item.file.FlatFileItemReader"
         p:resource="file:${user.dir}/${path.FlightUpdate}"
         p:encoding="UTF-8" p:strict="true">
-        <property name="lineMapper">
+        <constructor-arg>
             <bean
-                class="org.springframework.batch.item.file.mapping.DefaultLineMapper">
+                class="org.springframework.batch.infrastructure.item.file.mapping.DefaultLineMapper">
                 <property name="lineTokenizer">
                     <bean
-                        class="org.springframework.batch.item.file.transform.DelimitedLineTokenizer"
+                        class="org.springframework.batch.infrastructure.item.file.transform.DelimitedLineTokenizer"
                         p:names="departureDateStr,flightName,boardingClassCd,fareTypeCd,vacantNumStr"
                         p:delimiter="," p:quoteCharacter='"' />
                 </property>
                 <property name="fieldSetMapper">
                     <bean
-                        class="org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper"
+                        class="org.springframework.batch.infrastructure.item.file.mapping.BeanWrapperFieldSetMapper"
                         p:targetType="jp.co.ntt.atrs.batch.jbba01001.FlightUpdateDto" />
                 </property>
             </bean>
-        </property>
+        </constructor-arg>
     </bean>
 
     <bean id="writer"
